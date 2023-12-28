@@ -1,0 +1,79 @@
+{
+    "configurations": [
+        {
+            "showDevDebugOutput": "parsed",
+            "cwd": "${workspaceRoot}",
+            "executable": "./build/Robocon2024-Embedded-BoardC.elf",
+            "name": "Debug STM32",
+            "request": "launch",
+            "type": "cortex-debug",
+            "servertype": "openocd",
+            "preLaunchTask": "Build STM",
+            "device": "stm32f407",
+            "configFiles": [
+                "openocd.cfg"
+            ],
+            "breakAfterReset": true,
+            "liveWatch": {
+                "enabled": true,
+                "samplesPerSecond": 4
+            },
+            "runToEntryPoint": "main",
+            "rtos": "auto",
+            "rttConfig": {
+                "enabled": true,
+                "address": "auto",
+                "clearSearch": false,    // OpenOCD users may have to un-comment this
+                "rtt_start_retry": 500,
+                "polling_interval": 20,
+                "decoders": [
+                    {
+                        "port": 0,
+                        "type": "console"
+                    },
+                    // {
+                    //     "type": "graph",
+                    //     "port": 0,      
+                    //     "encoding": "unsigned",
+                    //     "graphId": "1", 
+                    //     "scale": 1
+                    // },
+                ]
+            }
+
+            
+        },
+        {
+            "showDevDebugOutput": "parsed",
+            "cwd": "${workspaceRoot}",
+            "executable": "./build/Robocon2024-Embedded-BoardC.elf",
+            "name": "Attach STM32",
+            "request": "attach",
+            "type": "cortex-debug",
+            "servertype": "openocd",
+            "preLaunchTask": "Build STM",
+            "device": "stm32f407",
+            "configFiles": [
+                "openocd.cfg"
+            ],
+            "breakAfterReset": true,
+            "liveWatch": {
+                "enabled": true,
+                "samplesPerSecond": 4
+            },
+            "runToEntryPoint": "main",
+            "rttConfig": {
+                "enabled": true,
+                "address": "auto",
+                "clearSearch": false,    // OpenOCD users may have to un-comment this
+                "decoders": [
+                    {
+                        "port": 0,
+                        "type": "console"
+                    }
+                ]
+            }
+        }
+        
+    ]
+}

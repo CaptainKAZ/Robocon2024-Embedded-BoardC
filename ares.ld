@@ -1,0 +1,3 @@
+INCLUDE STM32F407IGHx_FLASH.ld
+
+INCLUDE ARES\DriverAL\ares_section.ld

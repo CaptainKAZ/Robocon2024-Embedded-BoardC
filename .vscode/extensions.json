@@ -1,0 +1,23 @@
+{
+    "recommendations": [
+        "trond-snekvik.gnu-mapfiles",
+        "visualstudioexptteam.vscodeintellicode",
+        "visualstudioexptteam.intellicode-api-usage-examples",
+        "visualstudioexptteam.vscodeintellicode-completions",
+        "zixuanwang.linkerscript",
+        "mcu-debug.memory-view",
+        "mcu-debug.peripheral-viewer",
+        "mcu-debug.rtos-views",
+        "ms-vscode.cpptools",
+        "MS-CEINTL.vscode-language-pack-zh-hans",
+        "marus25.cortex-debug",
+        "mcu-debug.debug-tracker-vscode",
+        "eamodio.gitlens",
+        "cschlosser.doxdocgen",
+        "dan-c-underwood.arm",
+        "bmd.stm32-for-vscode"
+    ],
+    "unwantedRecommendations": [
+        "ms-vscode.cpptools-extension-pack"
+    ]
+}

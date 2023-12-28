@@ -1,0 +1,27 @@
+{
+  "configurations": [
+    {
+      "name": "STM32",
+      "includePath": [
+        "ARES/Application",
+        "ARES/DriverAL",
+        "ARES/External/SEGGER_RTT_V794/Config",
+        "ARES/External/SEGGER_RTT_V794/RTT",
+        "ARES/Framework",
+        "Core/Inc",
+        "Drivers/CMSIS/Device/ST/STM32F4xx/Include",
+        "Drivers/CMSIS/Include",
+        "Drivers/STM32F4xx_HAL_Driver/Inc",
+        "Drivers/STM32F4xx_HAL_Driver/Inc/Legacy",
+        "Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2",
+        "Middlewares/Third_Party/FreeRTOS/Source/include",
+        "Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F"
+      ],
+      "defines": [
+        "STM32F407xx",
+        "USE_HAL_DRIVER"
+      ],
+    }
+  ],
+  "version": 4
+}
