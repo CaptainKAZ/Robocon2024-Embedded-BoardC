@@ -5,7 +5,7 @@
  * @version 0.1
  * @date 2023-12-28
  * 
- * @attention: the timer should be prepared for 1US PER TICK
+ * @attention: the tim should be prepared for 1US PER TICK
  * 
  * @ref: https://www.armbbs.cn/forum.php?mod=viewthread&tid=121371
  * 
@@ -19,33 +19,22 @@
 #include "main.h"
 #include "tim.h"
 
-typedef enum DelayTimSrcHw {
-  DELAYTIMSRC_TIM9_CH1,
-  DELAYTIMSRC_TIM9_CH2,
-  DELAYTIMSRC_TIM12_CH1,
-  DELAYTIMSRC_TIM12_CH2,
-  DELAYTIMSRC_HW_NUM
-} DelayTimSrcHw;
-
 typedef enum DelayTimSrcStat {
   TIMER_IDLE = 0,
   TIMER_PENDING,
 } DelayTimSrcStat;
 
-typedef volatile struct DelayTimSrc DelayTimSrc;
+typedef volatile struct TimHw TimHw;
 
-typedef void (*DelayTimSrcCb)(DelayTimSrc *);
+typedef void (*TimCallback)(void *);
 
-typedef volatile struct DelayTimSrc {
-  TIM_HandleTypeDef *tim;
-  uint8_t            channel;
-  uint8_t            cc_flag;
-  DelayTimSrcStat    state;
-  DelayTimSrcCb      callback;
-} DelayTimSrc;
+typedef struct TimDelayCall {
+  TimCallback callback;
+  void       *arg;
+} TimDelayCall;
 
-extern void DelayTimSrc_init(DelayTimSrc *timSrc, DelayTimSrcHw hw, DelayTimSrcCb cb);
-extern void DelayTimSrc_setup(DelayTimSrc *timSrc, uint16_t delay);
-extern void DelayTimSrc_isr(TIM_HandleTypeDef *htim);
+extern void TimHw_init();
+extern int  Timer_setupDelay(TimDelayCall *call, uint16_t delay);
+extern void TimerHw_isr(TIM_HandleTypeDef *htim);
 
 #endif

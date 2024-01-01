@@ -2,7 +2,7 @@
 #include "log.h"
 #include <stdint.h>
 
-int do_pure_initcall() {
+int Initcall_doPure() {
   int ret = 0;
   for (InitCall *initCall = (void *)&__pure_init_start; initCall < (InitCall *)&__pure_init_end; initCall++) {
     ret = initCall->func();
@@ -13,7 +13,7 @@ int do_pure_initcall() {
   return 0;
 }
 
-int do_device_initcall() {
+int Initcall_doDevice() {
   int ret = 0;
   for (InitCall *initCall = (void *)&__device_init_start; initCall < (InitCall *)&__device_init_end; initCall++) {
     ret = initCall->func();
@@ -24,7 +24,7 @@ int do_device_initcall() {
   return 0;
 }
 
-int do_post_os_initcall() {
+int Initcall_doPostOs() {
   int ret = 0;
   for (InitCall *initCall = (void *)&__post_os_init_start; initCall < (InitCall *)&__post_os_init_end; initCall++) {
     ret = initCall->func();

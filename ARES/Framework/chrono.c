@@ -20,69 +20,70 @@
 #include "macro.h"
 static uint32_t sysClkFreq;
 
-typedef struct OsDelaySrc {
-  SemaphoreHandle_t sem;
-  StaticSemaphore_t semBuffer;
-  DelayTimSrc       src;
-} OsDelaySrc;
-OsDelaySrc osDelaySrc[DELAYTIMSRC_HW_NUM];
-
-static void Chrono_delayCallback(DelayTimSrc *timSrc) {
-  OsDelaySrc *src = container_of(timSrc, OsDelaySrc, src);
-  xSemaphoreGiveFromISR(src->sem, NULL);
-  // must invoke PendSV to let other tasks run
+static void Chrono_delayCallback(void *arg) {
+  vTaskNotifyGiveFromISR((TaskHandle_t)arg, NULL);
+  // must invoke PendSV to call scheduler
   taskYIELD();
 }
 
-inline ChronoTickType Chrono_get(void) { return Dwt_get(); }
+inline ChronoTick Chrono_get(void) { return Dwt_get(); }
 
-inline float Chrono_diff(ChronoTickType start, ChronoTickType end) { return (float)((uint32_t)(end - start)) / sysClkFreq; }
+inline float Chrono_diff(ChronoTick start, ChronoTick end) { return (float)((uint32_t)(end - start)) / sysClkFreq; }
 
+/**
+ * @brief delay specific us in task context. during delay, other task may run.
+ * @note  due to the hw limitation only 4 task can be pending simultaneously.
+ *        can be solved by virtualize hw tim, TBD.
+ * 
+ * @param us 
+ */
 void Chrono_usdelayOs(uint32_t us) {
+  // the function is only available in task context
+  if (unlikely(xPortIsInsideInterrupt() == pdTRUE)) {
+    LOG_E("Chrono_usdelayOs is not designed to use under isr context");
+    for (;;)
+      ;
+  }
   // delay itself takes about CHRONO_DELAY_OFFSET us, compensate it
   if (us > CHRONO_DELAY_OFFSET)
     us -= CHRONO_DELAY_OFFSET;
-  else
+  else {
     taskYIELD();
+    return;
+  }
+
   // if delay is longer than 16bit
   if (us > 0xFFFF) {
     osDelay(us / 1000);
     us %= 1000;
   }
-  // find an idle timesrc
-  for (int i = 0; i < DELAYTIMSRC_HW_NUM; i++) {
-    if (osDelaySrc[i].src.state == TIMER_IDLE) {
-      DelayTimSrc_setup(&osDelaySrc[i].src, us);
-      xSemaphoreTake(osDelaySrc[i].sem, portMAX_DELAY);
-      return;
-    }
+  TimDelayCall call = {.callback = Chrono_delayCallback, .arg = (void *)xTaskGetCurrentTaskHandle()};
+
+  int ret = Timer_setupDelay(&call, us);
+  // no available Hw
+  if (unlikely(ret != ARES_SUCCESS)) {
+    LOG_E("no available delay timesrc, degenerate to osDelay");
+    osDelay(us / 1000);
+    return;
   }
-  // not found
-  LOG_E("no available delay timesrc, degenerate to osDelay");
-  osDelay(us / 1000);
+  ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
 }
 
 static int Chrono_test() {
   STOPWATCH_TIC(test_chrono);
-  Chrono_usdelayOs(100);
-  Chrono_usdelayOs(100);
-  Chrono_usdelayOs(100);
-  Chrono_usdelayOs(100);
-  Chrono_usdelayOs(100);
-  Chrono_usdelayOs(100);
+  Chrono_usdelayOs(200);
+  Chrono_usdelayOs(200);
+  Chrono_usdelayOs(200);
   float delay = STOPWATCH_TOC(test_chrono);
   LOG_I("delay %f s, expected 600 us", delay);
   return 0;
 }
-register_initcall_post_os(Chrono_test);
+Initcall_registerPostOs(Chrono_test);
 
 int Chrono_init(void) {
   sysClkFreq = HAL_RCC_GetSysClockFreq();
   Dwt_init();
-  for (int i = 0; i < DELAYTIMSRC_HW_NUM; i++) {
-    osDelaySrc[i].sem = xSemaphoreCreateBinaryStatic(&osDelaySrc[i].semBuffer);
-    DelayTimSrc_init(&osDelaySrc[i].src, (DelayTimSrcHw)i, Chrono_delayCallback);
-  }
+  TimHw_init();
   return 0;
 }
-register_initcall_device(Chrono_init);
+Initcall_registerDevice(Chrono_init);

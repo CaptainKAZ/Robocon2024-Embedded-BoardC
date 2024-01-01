@@ -27,4 +27,4 @@ void do_log(const char *fmt, ...) {
   va_end(args);
 }
 
-register_initcall_pure(log_init);
+Initcall_registerPure(log_init);

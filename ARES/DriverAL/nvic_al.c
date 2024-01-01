@@ -12,8 +12,8 @@
 #include "tim_al.h"
 
 void TIM1_BRK_TIM9_IRQHandler(){
-  DelayTimSrc_isr(&htim9);
+  TimerHw_isr(&htim9);
 }
 void TIM8_BRK_TIM12_IRQHandler(){
-  DelayTimSrc_isr(&htim12);
+  TimerHw_isr(&htim12);
 }

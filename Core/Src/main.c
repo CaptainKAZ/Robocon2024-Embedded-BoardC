@@ -72,7 +72,7 @@ void MX_FREERTOS_Init(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-  do_pure_initcall();
+  Initcall_doPure();
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -102,7 +102,7 @@ int main(void)
   MX_CRC_Init();
   MX_RNG_Init();
   /* USER CODE BEGIN 2 */
-  do_device_initcall();
+  Initcall_doDevice();
   /* USER CODE END 2 */
 
   /* Init scheduler */

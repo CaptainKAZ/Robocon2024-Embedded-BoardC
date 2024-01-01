@@ -16,13 +16,13 @@
 
 #include "main.h"
 
-typedef uint32_t DwtTickType;
+typedef uint32_t DwtTick;
 
 inline void Dwt_init() {
   CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
   DWT->CYCCNT = 0;
   DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;
 }
-inline DwtTickType Dwt_get() { return DWT->CYCCNT; }
+inline DwtTick Dwt_get() { return DWT->CYCCNT; }
 
 #endif

@@ -8,7 +8,7 @@ typedef struct Work {
   void *argument;
 } Work;
 
-uint8_t schedule_work(const Work *work);
+extern uint8_t Workqueue_schedule(const Work *work);
 
 #define DEFINE_WORK_STATIC(name, func, arg) Work name = {.function = func, .argument = arg}
 
