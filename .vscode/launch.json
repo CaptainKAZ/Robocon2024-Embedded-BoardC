@@ -23,7 +23,7 @@
             "rttConfig": {
                 "enabled": true,
                 "address": "auto",
-                "clearSearch": false,    // OpenOCD users may have to un-comment this
+                // "clearSearch": false,    // OpenOCD users may have to un-comment this
                 "rtt_start_retry": 500,
                 "polling_interval": 20,
                 "decoders": [
@@ -31,13 +31,13 @@
                         "port": 0,
                         "type": "console"
                     },
-                    // {
-                    //     "type": "graph",
-                    //     "port": 0,      
-                    //     "encoding": "unsigned",
-                    //     "graphId": "1", 
-                    //     "scale": 1
-                    // },
+                    {
+                        "type": "graph",
+                        "port": 1,      
+                        "encoding": "float",
+                        "graphId": "1", 
+                        "scale": 1
+                    },
                 ]
             }
 
@@ -65,7 +65,7 @@
             "rttConfig": {
                 "enabled": true,
                 "address": "auto",
-                "clearSearch": false,    // OpenOCD users may have to un-comment this
+                // "clearSearch": false,    // OpenOCD users may have to un-comment this
                 "decoders": [
                     {
                         "port": 0,

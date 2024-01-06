@@ -6,6 +6,8 @@ int log_init(void) {
   SEGGER_RTT_Init();
   SEGGER_RTT_ConfigUpBuffer(0, "SEGGER RTT", NULL, 0, SEGGER_RTT_MODE_NO_BLOCK_TRIM);
   SEGGER_RTT_ConfigDownBuffer(0, "SEGGER RTT", NULL, 0, SEGGER_RTT_MODE_NO_BLOCK_TRIM);
+  SEGGER_RTT_ConfigUpBuffer(1, "Graph", NULL, 0, SEGGER_RTT_MODE_NO_BLOCK_TRIM);
+  SEGGER_RTT_ConfigDownBuffer(1, "Graph", NULL, 0, SEGGER_RTT_MODE_NO_BLOCK_TRIM);
   LOG_D("!!!!!!! Log subsystem initialized !!!!!!!!!!");
   LOG_I("           ___    ____  ___________");
   LOG_I("          /   |  / __ \\/ ____/ ___/");

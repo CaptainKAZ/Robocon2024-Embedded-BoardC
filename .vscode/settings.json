@@ -21,7 +21,8 @@
         "stm32f4xx_hal_conf.h": "c",
         "chrono.h": "c",
         "stm32f4xx_hal_rcc.h": "c",
-        "macro.h": "c"
+        "macro.h": "c",
+        "tim_al.h": "c"
     },
     "files.autoSave": "afterDelay",
     "cortex-debug.variableUseNaturalFormat": true,

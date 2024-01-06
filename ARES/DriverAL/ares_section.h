@@ -18,6 +18,6 @@ extern unsigned int __post_os_init_start;
 extern unsigned int __post_os_init_end;
 
 extern unsigned int _etext;
-#define IS_IN_SECTION_TEXT(x) ((x) > 0 && (x) < &_etext)
+#define IS_IN_SECTION_TEXT(x) ((x) > 0 && (uint32_t)(x) < (uint32_t)&_etext)
 
 #endif

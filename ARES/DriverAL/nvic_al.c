@@ -11,9 +11,14 @@
 
 #include "tim_al.h"
 
-void TIM1_BRK_TIM9_IRQHandler(){
-  TimerHw_isr(&htim9);
-}
-void TIM8_BRK_TIM12_IRQHandler(){
-  TimerHw_isr(&htim12);
+void TIM1_BRK_TIM9_IRQHandler() { TimerHw_isr(&htim9); }
+void TIM8_BRK_TIM12_IRQHandler() { TimerHw_isr(&htim12); }
+
+extern TIM_HandleTypeDef htim6;
+
+void TIM6_DAC_IRQHandler(void) {
+  if (TIM6->SR & TIM_IT_UPDATE) {
+    HAL_IncTick();
+    TIM6->SR = ~(TIM_IT_UPDATE);
+  }
 }
