@@ -143,7 +143,8 @@ AS_DEFS =
 # C defines
 C_DEFS =  \
 -DSTM32F407xx \
--DUSE_HAL_DRIVER
+-DUSE_HAL_DRIVER \
+-D__GIT_COMMIT_HASH=\"hello\"
 
 
 # CXX defines

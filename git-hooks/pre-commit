@@ -42,6 +42,6 @@ new_command="openocd"
 sed -i "s|$old_command_regex|$new_command|gi" STM32Make.make
 sed -i '/GCC_PATH="/d' STM32Make.make
 
-git add .
+git add .vscode/*
 
 exit 0

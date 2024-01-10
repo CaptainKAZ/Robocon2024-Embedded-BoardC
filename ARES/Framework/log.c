@@ -15,6 +15,10 @@ int log_init(void) {
   LOG_I("        / ___ |/ _, _/ /___ ___/ / ");
   LOG_I("       /_/  |_/_/ |_/_____//____/  ");
   LOG_W("Association of Robotics Engineers in SUSTech");
+  LOG_I("Build time: %s %s", __DATE__, __TIME__);
+#ifdef __GIT_COMMIT_HASH
+  LOG_I("Git commit hash: %s", __GIT_COMMIT_HASH);
+#endif 
   LOG_I();
   return 0;
 }

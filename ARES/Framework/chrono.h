@@ -22,7 +22,9 @@ extern ChronoTick64 InitalTick64;
 extern ChronoTick32 Chrono_get32(void);
 extern ChronoTick64 Chrono_get64(void);
 extern float        Chrono_diff32(ChronoTick32 start, ChronoTick32 end);
-extern float        Chrono_diff64(ChronoTick64 start, ChronoTick64 end);
+extern float        Chrono_diff64(ChronoTick64* start, ChronoTick64* end);
+
+#define CHRONO64_NOW (ChronoTick64 *)NULL
 
 #define DWT_OVERFLOW_DELAY_TOLERANCE (10U)
 /* depending on different optimization level, offset can be different */
@@ -49,8 +51,8 @@ extern void Chrono_usdelayOs(uint32_t us);
  * @brief stop the named 64 bit stopwatch and return the elapsed time in second
  * @note takes more time than STOPWATCH32_TOC but will not overflow
  */
-#define STOPWATCH64_TOC(name) Chrono_diff64(stopwatch_##name, Chrono_get64())
+#define STOPWATCH64_TOC(name) Chrono_diff64(&stopwatch_##name, CHRONO64_NOW)
 
-#define GET_STAMP() Chrono_diff64(InitalTick64, Chrono_get64())
+#define GET_STAMP() Chrono_diff64(&InitalTick64, CHRONO64_NOW)
 
 #endif

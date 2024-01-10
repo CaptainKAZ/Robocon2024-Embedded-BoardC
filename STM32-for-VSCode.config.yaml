@@ -28,7 +28,7 @@ asDefinitions: []
 # The file is expected to have a definition each new line.
 # This allows to include for example a .definition file which can be ignored in git and can contain
 # This can be convenient for passing along secrets at compile time, or generating a file for per device setup.
-cDefinitionsFile:
+cDefinitionsFile: commit.define
 cxxDefinitionsFile:
 asDefinitionsFile:
 

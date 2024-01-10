@@ -22,10 +22,11 @@
         "chrono.h": "c",
         "stm32f4xx_hal_rcc.h": "c",
         "macro.h": "c",
-        "tim_al.h": "c"
+        "tim_al.h": "c",
+        "ccmram_al.h": "c"
     },
     "files.autoSave": "afterDelay",
-    "cortex-debug.variableUseNaturalFormat": true,
+    "cortex-debug.variableUseNaturalFormat": false,
     "cortex-debug.liveWatchRefreshRate": 250,
     "cortex-debug.gdbPath": "${workspaceFolder}\\tools\\windows\\xpack-arm-none-eabi-gcc-13.2.1-1.1\\bin\\arm-none-eabi-gdb.exe",
     "cortex-debug.objdumpPath": "${workspaceFolder}\\tools\\windows\\xpack-arm-none-eabi-gcc-13.2.1-1.1\\bin\\arm-none-eabi-objdump.exe",

@@ -22,6 +22,8 @@
 ChronoTick64 InitalTick64;
 uint32_t     SysClkFreq;
 
+static uint8_t chrono_inited;
+
 inline ChronoTick32 Chrono_get32(void) { return Dwt_get(); }
 
 inline ChronoTick64 Chrono_get64(void) {
@@ -36,7 +38,12 @@ inline ChronoTick64 Chrono_get64(void) {
  * @param end   the end tick
  * @return float the elapsed time in second
  */
-inline float Chrono_diff32(ChronoTick32 start, ChronoTick32 end) { return (float)((uint32_t)(end - start)) / SysClkFreq; }
+inline float Chrono_diff32(ChronoTick32 start, ChronoTick32 end) {
+  if (!chrono_inited) {
+    return 0.0;
+  }
+  return (float)((uint32_t)(end - start)) / SysClkFreq;
+}
 
 /**
  * @brief return the elapsed time in second
@@ -45,20 +52,30 @@ inline float Chrono_diff32(ChronoTick32 start, ChronoTick32 end) { return (float
  * @param end   the end tick
  * @return float the elapsed time in second
  */
-float Chrono_diff64(ChronoTick64 start, ChronoTick64 end) {
+float Chrono_diff64(ChronoTick64 *start, ChronoTick64 *end) {
   static float    dwtOverflowDuration = 0;
   static uint32_t dwtOverflowTicks    = 0;
   static uint32_t dwtTickPerHalTick   = 0;
+  if (!chrono_inited) {
+    return 0.0;
+  }
   if (dwtOverflowDuration == 0 || dwtOverflowTicks == 0 || dwtTickPerHalTick == 0) {
     dwtOverflowDuration = UINT32_MAX / SysClkFreq;
     dwtOverflowTicks    = dwtOverflowDuration * uwTickFreq;
     dwtTickPerHalTick   = SysClkFreq / uwTickFreq;
   }
 
-  // halTick running at 1khz while dwt running at SysClkFreq
-  uint32_t diffSys      = end.halTick - start.halTick;
-  uint32_t diffDwt      = end.dwtTick - start.dwtTick;
-  int32_t  overflow_cnt = diffSys / dwtOverflowTicks;
+  // halTick running at uwTickFreq(1KHz) while dwtTick running at SysClkFreq(168MHz)
+  uint32_t diffSys, diffDwt;
+  if (end == CHRONO64_NOW) {
+    diffDwt = Dwt_get() - start->dwtTick;
+    diffSys = uwTick - start->halTick;
+  } else {
+    diffSys = end->halTick - start->halTick;
+    diffDwt = end->dwtTick - start->dwtTick;
+  }
+
+  int32_t overflow_cnt = diffSys / dwtOverflowTicks;
   if (diffSys != 0 && overflow_cnt != 0 && diffSys % dwtOverflowTicks < DWT_OVERFLOW_DELAY_TOLERANCE) {
     // dwt may overflows during DWT_OVERFLOW_DELAY_TOLERANCE ms
     if (diffDwt > (dwtTickPerHalTick * DWT_OVERFLOW_DELAY_TOLERANCE)) {
@@ -69,9 +86,10 @@ float Chrono_diff64(ChronoTick64 start, ChronoTick64 end) {
 }
 
 static void Chrono_delayCallback(void *arg) {
-  vTaskNotifyGiveFromISR((TaskHandle_t)arg, NULL);
-  // must invoke PendSV to call scheduler
-  taskYIELD();
+  BaseType_t xHigherPriorityTaskWoken;
+  vTaskNotifyGiveFromISR((TaskHandle_t)arg, &xHigherPriorityTaskWoken);
+  // invoke PendSV to call scheduler
+  portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
 }
 
 /**
@@ -130,6 +148,7 @@ int Chrono_init(void) {
   TimHw_init();
   InitalTick64 = Chrono_get64();
   LOG_I("SysClkFreq %d", SysClkFreq);
+  chrono_inited = 1;
   return 0;
 }
 Initcall_registerDevice(Chrono_init);
