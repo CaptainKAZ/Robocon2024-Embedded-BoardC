@@ -18,6 +18,13 @@ extern unsigned int __post_os_init_start;
 extern unsigned int __post_os_init_end;
 
 extern unsigned int _etext;
-#define IS_IN_SECTION_TEXT(x) ((x) > 0 && (uint32_t)(x) < (uint32_t)&_etext)
+extern unsigned int _edata;
+extern unsigned int _sdata;
+extern int          _siccmram;
+extern int          _sccmram;
+extern int          _eccmram;
+#define IS_FUNCTION(x)                                                                                                        \
+  (((void *)(x) > (void *)FLASH_BASE && (void *)(x) < (void *)&_etext) ||                                                    \
+   ((void *)(x) >= (void *)&_sdata && (void *)(x) < (void *)&_edata))
 
 #endif

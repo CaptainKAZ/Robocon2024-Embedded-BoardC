@@ -2,6 +2,7 @@
 #include "log.h"
 #include "macro.h"
 #include "ares_section.h"
+#include "ram_al.h"
 
 typedef volatile struct TimHw {
   TIM_HandleTypeDef *tim;
@@ -14,7 +15,7 @@ typedef volatile struct TimHw {
 #define TIM_HW(timx, chl)                                                                                                     \
   { .tim = &h##timx, .cc_flag = TIM_IT_CC##chl, .channel = TIM_CHANNEL_##chl, .state = TIMER_IDLE, .call = NULL }
 
-static TimHw timHw[] = {
+TimHw timHw[] = {
     TIM_HW(tim9, 1),
     TIM_HW(tim9, 2),
     TIM_HW(tim12, 1),
@@ -64,7 +65,7 @@ int Timer_setupDelay(TimDelayCall *call, uint16_t us) {
   return ARES_SUCCESS;
 }
 
-void TimerHw_isr(TIM_HandleTypeDef *htim) {
+RAM_FUCNTION void TimerHw_isr(TIM_HandleTypeDef *htim) {
   // currently we don't use htim
   UNUSED(htim);
   // we need to check all hw in case there is concurrency
@@ -75,8 +76,11 @@ void TimerHw_isr(TIM_HandleTypeDef *htim) {
       }
       __HAL_TIM_CLEAR_IT(timHw[i].tim, timHw[i].cc_flag);
       __HAL_TIM_DISABLE_IT(timHw[i].tim, timHw[i].cc_flag);
-      if (IS_IN_SECTION_TEXT(timHw[i].call->callback))
+      if (IS_FUNCTION(timHw[i].call->callback))
         timHw[i].call->callback(timHw->call->arg);
+      else
+        LOG_E("callback %x is not a function, sdata %x, edata %x, etext %x", timHw[i].call->callback, (void *)&_sdata,
+              (void *)&_edata, (void *)&_etext);
       timHw[i].state = TIMER_IDLE;
     }
   }

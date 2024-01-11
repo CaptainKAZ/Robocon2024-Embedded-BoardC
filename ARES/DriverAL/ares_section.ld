@@ -16,4 +16,10 @@ SECTIONS
         PROVIDE(__post_os_init_end = .);
     } > FLASH
     . = ALIGN(4);
+    PROVIDE(_siccmram = _siccmram);
+    PROVIDE(_sccmram = _sccmram);
+    PROVIDE(_eccmram = _eccmram);
+    PROVIDE(_sidata = _sidata);
+    PROVIDE(_sdata = _sdata);
+    PROVIDE(_edata = _edata);
 }

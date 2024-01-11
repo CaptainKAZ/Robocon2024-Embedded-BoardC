@@ -10,9 +10,10 @@
  */
 
 #include "tim_al.h"
+#include "ram_al.h"
 
-void TIM1_BRK_TIM9_IRQHandler() { TimerHw_isr(&htim9); }
-void TIM8_BRK_TIM12_IRQHandler() { TimerHw_isr(&htim12); }
+RAM_FUCNTION void TIM1_BRK_TIM9_IRQHandler() { TimerHw_isr(&htim9); }
+RAM_FUCNTION void TIM8_BRK_TIM12_IRQHandler() { TimerHw_isr(&htim12); }
 
 extern TIM_HandleTypeDef htim6;
 

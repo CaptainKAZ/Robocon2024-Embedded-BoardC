@@ -18,6 +18,7 @@
 #include "log.h"
 #include "tim_al.h"
 #include "macro.h"
+#include "ram_al.h"
 
 ChronoTick64 InitalTick64;
 uint32_t     SysClkFreq;
@@ -76,7 +77,7 @@ float Chrono_diff64(ChronoTick64 *start, ChronoTick64 *end) {
   }
 
   int32_t overflow_cnt = diffSys / dwtOverflowTicks;
-  if (diffSys != 0 && overflow_cnt != 0 && diffSys % dwtOverflowTicks < DWT_OVERFLOW_DELAY_TOLERANCE) {
+  if (diffSys != 0 && overflow_cnt != 0 && (diffSys - overflow_cnt * dwtOverflowTicks) < DWT_OVERFLOW_DELAY_TOLERANCE) {
     // dwt may overflows during DWT_OVERFLOW_DELAY_TOLERANCE ms
     if (diffDwt > (dwtTickPerHalTick * DWT_OVERFLOW_DELAY_TOLERANCE)) {
       overflow_cnt -= 1;
@@ -85,7 +86,7 @@ float Chrono_diff64(ChronoTick64 *start, ChronoTick64 *end) {
   return (float)diffDwt / SysClkFreq + (float)overflow_cnt * dwtOverflowDuration;
 }
 
-static void Chrono_delayCallback(void *arg) {
+RAM_FUCNTION void Chrono_delayCallback(void *arg) {
   BaseType_t xHigherPriorityTaskWoken;
   vTaskNotifyGiveFromISR((TaskHandle_t)arg, &xHigherPriorityTaskWoken);
   // invoke PendSV to call scheduler

@@ -39,6 +39,7 @@ C_SOURCES =  \
 ARES/Application/initcall.c \
 ARES/Application/work_queue.c \
 ARES/DriverAL/nvic_al.c \
+ARES/DriverAL/ram_al.c \
 ARES/DriverAL/tim_al.c \
 ARES/External/SEGGER_RTT_V794/RTT/SEGGER_RTT.c \
 ARES/External/SEGGER_RTT_V794/RTT/SEGGER_RTT_printf.c \
@@ -144,7 +145,7 @@ AS_DEFS =
 C_DEFS =  \
 -DSTM32F407xx \
 -DUSE_HAL_DRIVER \
--D__GIT_COMMIT_HASH=\"hello\"
+-D__GIT_COMMIT_HASH=\"dcd3d55\"
 
 
 # CXX defines
@@ -226,7 +227,6 @@ vpath %.cpp $(sort $(dir $(CPP_SOURCES)))
 OBJECTS += $(addprefix $(BUILD_DIR)/,$(notdir $(C_SOURCES:.c=.o)))
 vpath %.c $(sort $(dir $(C_SOURCES)))
 
-# list of ASM program objects
 # list of ASM program objects
 UPPER_CASE_ASM_SOURCES = $(filter %.S,$(ASM_SOURCES))
 LOWER_CASE_ASM_SOURCES = $(filter %.s,$(ASM_SOURCES))
