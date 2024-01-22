@@ -1,23 +1,23 @@
 {
-    "recommendations": [
-        "trond-snekvik.gnu-mapfiles",
-        "visualstudioexptteam.vscodeintellicode",
-        "visualstudioexptteam.intellicode-api-usage-examples",
-        "visualstudioexptteam.vscodeintellicode-completions",
-        "zixuanwang.linkerscript",
-        "mcu-debug.memory-view",
-        "mcu-debug.peripheral-viewer",
-        "mcu-debug.rtos-views",
-        "ms-vscode.cpptools",
-        "MS-CEINTL.vscode-language-pack-zh-hans",
-        "marus25.cortex-debug",
-        "mcu-debug.debug-tracker-vscode",
-        "eamodio.gitlens",
-        "cschlosser.doxdocgen",
-        "dan-c-underwood.arm",
-        "bmd.stm32-for-vscode"
-    ],
-    "unwantedRecommendations": [
-        "ms-vscode.cpptools-extension-pack"
-    ]
+  "recommendations": [
+    "ms-vscode.cpptools",
+    "ms-ceintl.vscode-language-pack-zh-hans",
+    "llvm-vs-code-extensions.vscode-clangd",
+    "marus25.cortex-debug",
+    "cschlosser.doxdocgen",
+    "eamodio.gitlens",
+    "trond-snekvik.gnu-mapfiles",
+    "ms-vscode.hexeditor",
+    "visualstudioexptteam.vscodeintellicode",
+    "visualstudioexptteam.intellicode-api-usage-examples",
+    "visualstudioexptteam.vscodeintellicode-completions",
+    "mcu-debug.memory-view",
+    "mcu-debug.peripheral-viewer",
+    "mcu-debug.rtos-views",
+    "thecreativedodo.usbip-connect"
+  ],
+  "unwantedRecommendations": [
+    "ms-vscode.makefile-tools",
+    "ms-vscode.cpptools-extension-pack",
+  ]
 }

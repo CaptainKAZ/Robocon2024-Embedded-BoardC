@@ -1,37 +1,30 @@
 {
-    "C_Cpp.default.compilerPath": "${workspaceFolder}\\tools\\windows\\xpack-arm-none-eabi-gcc-13.2.1-1.1\\bin\\arm-none-eabi-gcc.exe",
+    "files.autoSave": "afterDelay",
+    "cortex-debug.openocdPath": "openocd",
+    "cortex-debug.gdbPath": "gdb-multiarch",
+    "cortex-debug.objdumpPath": "arm-none-eabi-objdump",
+    "C_Cpp.clang_format_fallbackStyle": "LLVM",
+    "editor.tabSize": 2,
     "C_Cpp.codeAnalysis.clangTidy.args": [
         "-D__GNUC__ -DSTM32F407xx -DUSE_HAL_DRIVER"
     ],
-    "C_Cpp.codeAnalysis.clangTidy.enabled": true,
-    "files.associations": {
-        "segger_rtt.h": "c",
-        "freertos.h": "c",
-        "stm32f4xx_hal_tim.h": "c",
-        "stm32f4xx_ll_tim.h": "c",
-        "tim.h": "c",
-        "main.h": "c",
-        "initcall.h": "c",
-        "ares_section.h": "c",
-        "*.tcc": "c",
-        "cstdio": "c",
-        "*.def": "c",
-        "stm32f4xx_it.h": "c",
-        "stm32f4xx_hal.h": "c",
-        "stm32f4xx_hal_conf.h": "c",
-        "chrono.h": "c",
-        "stm32f4xx_hal_rcc.h": "c",
-        "macro.h": "c",
-        "tim_al.h": "c",
-        "ccmram_al.h": "c"
-    },
-    "files.autoSave": "afterDelay",
-    "cortex-debug.variableUseNaturalFormat": false,
-    "cortex-debug.liveWatchRefreshRate": 250,
-    "cortex-debug.gdbPath": "${workspaceFolder}\\tools\\windows\\xpack-arm-none-eabi-gcc-13.2.1-1.1\\bin\\arm-none-eabi-gdb.exe",
-    "cortex-debug.objdumpPath": "${workspaceFolder}\\tools\\windows\\xpack-arm-none-eabi-gcc-13.2.1-1.1\\bin\\arm-none-eabi-objdump.exe",
     "files.exclude": {
         "**/.git": false
     },
-
+    "remote.autoForwardPorts": false,
+    "cortex-debug.variableUseNaturalFormat": true,
+    "files.associations": {
+        "chrono.h": "c",
+        "dwt_al.h": "c",
+        "main.h": "c"
+    },
+    "cortex-debug.liveWatchRefreshRate": 250,
+    "cortex-debug.dbgServerLogfile": "gdblog",
+    "clangd.arguments": [
+        "--query-driver=/usr/bin/arm-none-eabi-gcc",
+		"--clang-tidy",
+		"--pretty",
+		"--background-index",
+		"-log=verbose"
+    ],
 }

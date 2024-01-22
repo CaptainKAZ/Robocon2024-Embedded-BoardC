@@ -1,47 +1,10 @@
-#!/bin/bash
-
-root_path=$(git rev-parse --show-toplevel)
-cd "$root_path" || exit
-
-# Define the path to the .vscode directory
-VS_CODE_DIR='.vscode'
-
-# Find all files in the .vscode directory with the extension .json
-FILES=$(find $VS_CODE_DIR -name '*.json')
-
-# Loop through each file and remove lines containing Windows paths
-for FILE in $FILES; do
-  echo "Processing file: $FILE"
-  # Use grep to find lines containing "path" and a drive letter (case-insensitive) followed by a colon and any number of backslashes or other characters
-  WINDOWS_LINES=$(grep -iE "[a-zA-Z]:" $FILE | grep -i "path")
-  IFS=$'\n'
-  if [ -n "$WINDOWS_LINES" ]; then
-    echo "Deleted lines:"
-    # Loop through each line and delete it using sed
-    for LINE in $WINDOWS_LINES; do
-      echo "$LINE"
-      ESCAPED_LINE=$(sed 's/\\/\\\\/g' <<< "$LINE")
-      sed -i "/$ESCAPED_LINE/d" "$FILE"
-    done
-  else
-    echo "No lines deleted"
-  fi
-done
-
 # build test
-make -f STM32Make.make all -j32
+make -j$(nproc)
 
 # check if build success
 if [ $? -ne 0 ]; then
     echo "Build failed"
     exit 1
 fi
-
-old_command_regex="\".*openocd.exe\""
-new_command="openocd"
-sed -i "s|$old_command_regex|$new_command|gi" STM32Make.make
-sed -i '/GCC_PATH="/d' STM32Make.make
-
-git add .vscode/*
 
 exit 0

@@ -16,10 +16,11 @@ int log_init(void) {
   LOG_I("       /_/  |_/_/ |_/_____//____/  ");
   LOG_W("Association of Robotics Engineers in SUSTech");
   LOG_I();
-  LOG_I("Build time: %s %s", __DATE__, __TIME__);
+  LOG_I("Rebuild time: %s %s", __DATE__, __TIME__);
 #ifdef __GIT_COMMIT_HASH
   LOG_I("Git commit hash: %s", __GIT_COMMIT_HASH);
-#endif 
+#endif
+  LOG_I("STM32 UID: %08X %08X %08X", HAL_GetUIDw0(), HAL_GetUIDw1, HAL_GetUIDw2());
   return 0;
 }
 

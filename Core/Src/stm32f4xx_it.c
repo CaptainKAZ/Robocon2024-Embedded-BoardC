@@ -247,7 +247,6 @@ void USART3_IRQHandler(void)
   /* USER CODE END USART3_IRQn 1 */
 }
 
-
 /**
   * @brief This function handles HASH and RNG global interrupts.
   */

@@ -14,7 +14,7 @@
 #include "stm32f4xx_hal_rcc.h"
 #include "cmsis_os2.h"
 #include "FreeRTOS.h"
-#include "semphr.h"
+#include "task.h"
 #include "log.h"
 #include "tim_al.h"
 #include "macro.h"
