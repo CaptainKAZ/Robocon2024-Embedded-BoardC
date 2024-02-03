@@ -23,6 +23,8 @@
             "rttConfig": {
                 "enabled": true,
                 "address": "auto",
+                "searchId": "SEGGER RTT",
+                "searchSize": 16,
                 "clearSearch": false,    // OpenOCD users may have to un-comment this
                 "rtt_start_retry": 500,
                 "polling_interval": 20,

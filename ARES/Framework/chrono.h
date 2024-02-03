@@ -9,7 +9,7 @@
  * @brief 64 bit timestamp tick type, NOT corresponding to any physical time unit
  * actually a struct of {halTick, dwtTick}
  */
-typedef struct ChronoTick {
+typedef struct ChronoTick64 {
   uint32_t halTick;
   uint32_t dwtTick;
 } ChronoTick64;

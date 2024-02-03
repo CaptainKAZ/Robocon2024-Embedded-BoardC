@@ -35,6 +35,5 @@ typedef struct TimDelayCall {
 
 extern void TimHw_init();
 extern int  Timer_setupDelay(TimDelayCall *call, uint16_t delay);
-extern void TimerHw_isr(TIM_HandleTypeDef *htim);
 
 #endif

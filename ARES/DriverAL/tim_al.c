@@ -3,6 +3,9 @@
 #include "macro.h"
 #include "ares_section.h"
 #include "ram_al.h"
+#include "nvic_al.h"
+#include "stm32f407xx.h"
+#include "tim.h"
 
 typedef volatile struct TimHw {
   TIM_HandleTypeDef *tim;
@@ -12,10 +15,13 @@ typedef volatile struct TimHw {
   TimDelayCall      *call;
 } TimHw;
 
-#define TIM_HW(timx, chl)                                                                                                     \
-  { .tim = &h##timx, .cc_flag = TIM_IT_CC##chl, .channel = TIM_CHANNEL_##chl, .state = TIMER_IDLE, .call = NULL }
+#define TIM_HW(timx, chl)                                                                          \
+  {                                                                                                \
+    .tim = &h##timx, .cc_flag = TIM_IT_CC##chl, .channel = TIM_CHANNEL_##chl, .state = TIMER_IDLE, \
+    .call = NULL                                                                                   \
+  }
 
-TimHw timHw[] = {
+static TimHw timHw[] = {
     TIM_HW(tim9, 1),
     TIM_HW(tim9, 2),
     TIM_HW(tim12, 1),
@@ -23,11 +29,6 @@ TimHw timHw[] = {
 };
 
 #define NUM_HW (sizeof(timHw) / sizeof(TimHw))
-
-void TimHw_init() {
-  HAL_TIM_Base_Start(&htim9);
-  HAL_TIM_Base_Start(&htim12);
-}
 
 /**
  * @brief Call call->callback(call->arg) when @ref "us" passed.
@@ -65,9 +66,9 @@ int Timer_setupDelay(TimDelayCall *call, uint16_t us) {
   return ARES_SUCCESS;
 }
 
-RAM_FUCNTION void TimerHw_isr(TIM_HandleTypeDef *htim) {
+void TimerHw_isr(void *param) {
   // currently we don't use htim
-  UNUSED(htim);
+  UNUSED(param);
   // we need to check all hw in case there is concurrency
   for (int i = 0; i < NUM_HW; i++) {
     if (__HAL_TIM_GET_ITSTATUS(timHw[i].tim, timHw[i].cc_flag)) {
@@ -79,9 +80,26 @@ RAM_FUCNTION void TimerHw_isr(TIM_HandleTypeDef *htim) {
       if (IS_FUNCTION(timHw[i].call->callback))
         timHw[i].call->callback(timHw->call->arg);
       else
-        LOG_E("callback %x is not a function, sdata %x, edata %x, etext %x", timHw[i].call->callback, (void *)&_sdata,
-              (void *)&_edata, (void *)&_etext);
+        LOG_E("callback %x is not a function, sdata %x, edata %x, etext %x",
+              timHw[i].call->callback, (void *)&_sdata, (void *)&_edata, (void *)&_etext);
       timHw[i].state = TIMER_IDLE;
     }
   }
+}
+
+static Nvic_IrqHandler Tim9Handler = {
+    .isr_callback = TimerHw_isr,
+    .param        = &htim9,
+};
+
+static Nvic_IrqHandler Tim12Handler = {
+    .isr_callback = TimerHw_isr,
+    .param        = &htim12,
+};
+
+void TimHw_init() {
+  HAL_TIM_Base_Start(&htim9);
+  HAL_TIM_Base_Start(&htim12);
+  Nvic_requestSOI(TIM1_BRK_TIM9_IRQn, &Tim9Handler);
+  Nvic_requestSOI(TIM8_BRK_TIM12_IRQn, &Tim12Handler);
 }

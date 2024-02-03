@@ -1,8 +1,9 @@
-BasedOnStyle: LLVM
+BasedOnStyle: LLVM  
 IndentWidth: 2
-ColumnLimit: 127
+ColumnLimit: 100
 AlignConsecutiveAssignments: true
 AlignConsecutiveDeclarations: true
+AlignConsecutiveMacros: Consecutive
 AllowShortBlocksOnASingleLine: true
 AllowShortCaseLabelsOnASingleLine: true
 ReflowComments: false
