@@ -9,11 +9,11 @@ int log_init(void) {
   SEGGER_RTT_ConfigUpBuffer(1, "Graph", NULL, 0, SEGGER_RTT_MODE_NO_BLOCK_TRIM);
   SEGGER_RTT_ConfigDownBuffer(1, "Graph", NULL, 0, SEGGER_RTT_MODE_NO_BLOCK_TRIM);
   LOG_D("!!!!!!! Log subsystem initialized !!!!!!!!!!");
-  LOG_I("           ___    ____  ___________");
-  LOG_I("          /   |  / __ \\/ ____/ ___/");
-  LOG_I("         / /| | / /_/ / __/  \\__ \\ ");
-  LOG_I("        / ___ |/ _, _/ /___ ___/ / ");
-  LOG_I("       /_/  |_/_/ |_/_____//____/  ");
+  LOG_E("           ___    ____  ___________");
+  LOG_E("          /   |  / __ \\/ ____/ ___/");
+  LOG_E("         / /| | / /_/ / __/  \\__ \\ ");
+  LOG_E("        / ___ |/ _, _/ /___ ___/ / ");
+  LOG_E("       /_/  |_/_/ |_/_____//____/  ");
   LOG_W("Association of Robotics Engineers in SUSTech");
   LOG_I();
   LOG_I("Rebuild time: %s %s", __DATE__, __TIME__);

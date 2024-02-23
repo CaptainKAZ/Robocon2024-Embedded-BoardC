@@ -5,30 +5,25 @@
 #include "stdint.h"
 #include "dwt_al.h"
 
-/**
- * @brief 64 bit timestamp tick type, NOT corresponding to any physical time unit
- * actually a struct of {halTick, dwtTick}
- */
-typedef struct ChronoTick64 {
-  uint32_t halTick;
-  uint32_t dwtTick;
-} ChronoTick64;
+typedef DwtTick64 ChronoTick64;
 /**
  * @brief 32-bit timestamp tick type, NOT corresponding to any physical time unit
  */
 typedef DwtTick ChronoTick32;
 
 extern ChronoTick64 InitalTick64;
-extern ChronoTick32 Chrono_get32(void);
+
 extern ChronoTick64 Chrono_get64(void);
 extern float        Chrono_diff32(ChronoTick32 start, ChronoTick32 end);
-extern float        Chrono_diff64(ChronoTick64* start, ChronoTick64* end);
+extern float        Chrono_diff64(ChronoTick64 *start, ChronoTick64 *end);
 
+#define Chrono_get32 Dwt_get
+#define Chrono_get64 Dwt_get64
 #define CHRONO64_NOW (ChronoTick64 *)NULL
 
 #define DWT_OVERFLOW_DELAY_TOLERANCE (10U)
 /* depending on different optimization level, offset can be different */
-#define CHRONO_DELAY_OFFSET (5U)
+#define CHRONO_DELAY_OFFSET (6U)
 extern void Chrono_usdelayOs(uint32_t us);
 /**
  * @brief provide a name and start the named 32 bit stopwatch

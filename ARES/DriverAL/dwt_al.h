@@ -15,14 +15,21 @@
 #define DWT_AL_H
 
 #include "main.h"
+#include "nvic_al.h"
 
-typedef uint32_t DwtTick;
+typedef uint32_t         DwtTick;
+typedef uint64_t         DwtTick64;
+extern volatile uint32_t Dwt_Period;
 
-inline void Dwt_init() {
-  CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
-  DWT->CYCCNT = 0;
-  DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;
-}
+extern void Dwt_init();
+
 inline DwtTick Dwt_get() { return DWT->CYCCNT; }
+
+extern void Dwt_updatePeriod();
+
+inline DwtTick64 Dwt_get64() {
+  Dwt_updatePeriod();
+  return (DwtTick64)Dwt_Period << 32 | Dwt_get();
+}
 
 #endif

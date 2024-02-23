@@ -45,7 +45,6 @@
             "preAttachCommands": [
                 "monitor reset halt",
                 "-target-download",
-                "monitor go"
             ],
             "liveWatch": {
                 "enabled": true,
