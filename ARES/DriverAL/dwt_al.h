@@ -25,7 +25,7 @@ extern void Dwt_init();
 
 inline DwtTick Dwt_get() { return DWT->CYCCNT; }
 
-extern void Dwt_updatePeriod();
+extern int Dwt_updatePeriod();
 
 inline DwtTick64 Dwt_get64() {
   Dwt_updatePeriod();

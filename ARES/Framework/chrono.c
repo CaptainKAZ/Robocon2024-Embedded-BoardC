@@ -52,11 +52,12 @@ float Chrono_diff64(ChronoTick64 *start, ChronoTick64 *end) {
   return (float)((uint64_t)(endval - *start)) / SysClkFreq;
 }
 
-RAM_FUCNTION void Chrono_delayCallback(void *arg) {
+RAM_FUCNTION int Chrono_delayCallback(void *arg) {
   BaseType_t xHigherPriorityTaskWoken;
   vTaskNotifyGiveFromISR((TaskHandle_t)arg, &xHigherPriorityTaskWoken);
   // invoke PendSV to call scheduler
   portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+  return ARES_SUCCESS;
 }
 
 /**
@@ -86,8 +87,7 @@ void Chrono_usdelayOs(uint32_t us) {
     osDelay(us / 1000);
     us %= 1000;
   }
-  TimDelayCall call = {.callback = Chrono_delayCallback,
-                       .arg      = (void *)xTaskGetCurrentTaskHandle()};
+  TimDelayCall call = ARGED_FUNC(Chrono_delayCallback, ((void *)xTaskGetCurrentTaskHandle()));
 
   int ret = Timer_setupDelay(&call, us);
   // no available Hw
@@ -115,7 +115,7 @@ int Chrono_init(void) {
   Dwt_init();
   TimHw_init();
   InitalTick64 = Chrono_get64();
-  LOG_I("SysClkFreq %d", SysClkFreq);
+  LOG_I("SysClkFreq\t%d", SysClkFreq);
   return 0;
 }
 Initcall_registerDevice(Chrono_init);

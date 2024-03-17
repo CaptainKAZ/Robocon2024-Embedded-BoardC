@@ -10,7 +10,7 @@
             "preLaunchTask": "build",
             "cwd": "${workspaceFolder}",
             "executable": "./build/Robocon2024-Embedded-BoardC.elf",
-            "request": "attach",
+            "request": "launch",
             "type": "cortex-debug",
             "servertype": "openocd",
             "device": "stm32f407",
@@ -33,16 +33,13 @@
                         "port": 0,
                         "type": "console"
                     },
-                    // {
-                    //     "type": "graph",
-                    //     "port": 1,      
-                    //     "encoding": "float",
-                    //     "graphId": "1", 
-                    //     "scale": 1
-                    // },
+                    {
+                        "type": "binary",
+                        "port": 1,
+                    },
                 ]
             },
-            "preAttachCommands": [
+            "overrideLaunchCommands": [
                 "monitor reset halt",
                 "-target-download",
             ],
@@ -51,5 +48,12 @@
                 "samplesPerSecond": 4,
             },
         },
+        {
+            "name": "Run Python Script",
+            "type": "shell",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal"
+        }
     ]
 }

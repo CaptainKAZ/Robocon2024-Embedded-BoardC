@@ -18,7 +18,7 @@
 
 #include "main.h"
 #include "tim.h"
-
+#include "macro.h"
 typedef enum DelayTimSrcStat {
   TIMER_IDLE = 0,
   TIMER_PENDING,
@@ -28,10 +28,7 @@ typedef volatile struct TimHw TimHw;
 
 typedef void (*TimCallback)(void *);
 
-typedef struct TimDelayCall {
-  TimCallback callback;
-  void       *arg;
-} TimDelayCall;
+typedef struct ArgedFunc TimDelayCall;
 
 extern void TimHw_init();
 extern int  Timer_setupDelay(TimDelayCall *call, uint16_t delay);

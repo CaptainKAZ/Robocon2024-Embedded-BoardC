@@ -11,14 +11,14 @@ typedef volatile struct TimHw {
   TIM_HandleTypeDef *tim;
   uint8_t            channel;
   uint8_t            cc_flag;
-  DelayTimSrcStat    state;
+  DelayTimSrcStat    status;
   TimDelayCall      *call;
 } TimHw;
 
 #define TIM_HW(timx, chl)                                                                          \
   {                                                                                                \
-    .tim = &h##timx, .cc_flag = TIM_IT_CC##chl, .channel = TIM_CHANNEL_##chl, .state = TIMER_IDLE, \
-    .call = NULL                                                                                   \
+    .tim = &h##timx, .cc_flag = TIM_IT_CC##chl, .channel = TIM_CHANNEL_##chl,                      \
+    .status = TIMER_IDLE, .call = NULL                                                             \
   }
 
 static TimHw timHw[] = {
@@ -42,7 +42,7 @@ int Timer_setupDelay(TimDelayCall *call, uint16_t us) {
   // first find a hw
   TimHw *hw = NULL;
   for (uint8_t i = 0; i < NUM_HW; i++) {
-    if (timHw[i].state == TIMER_IDLE) {
+    if (timHw[i].status == TIMER_IDLE) {
       hw = &timHw[i];
       break;
     }
@@ -57,7 +57,7 @@ int Timer_setupDelay(TimDelayCall *call, uint16_t us) {
   }
   // TIM9 and TIM12 are 16-bit timers
   uint16_t cnt     = __HAL_TIM_GET_COUNTER(hw->tim);
-  hw->state        = TIMER_PENDING;
+  hw->status       = TIMER_PENDING;
   hw->call         = call;
   uint16_t cc_flag = hw->cc_flag;
   __HAL_TIM_SET_COMPARE(hw->tim, hw->channel, (uint16_t)(cnt + us));
@@ -66,7 +66,7 @@ int Timer_setupDelay(TimDelayCall *call, uint16_t us) {
   return ARES_SUCCESS;
 }
 
-void TimerHw_isr(void *param) {
+int TimerHw_isr(void *param) {
   // currently we don't use htim
   UNUSED(param);
   // we need to check all hw in case there is concurrency
@@ -77,25 +77,16 @@ void TimerHw_isr(void *param) {
       }
       __HAL_TIM_CLEAR_IT(timHw[i].tim, timHw[i].cc_flag);
       __HAL_TIM_DISABLE_IT(timHw[i].tim, timHw[i].cc_flag);
-      if (IS_FUNCTION(timHw[i].call->callback))
-        timHw[i].call->callback(timHw->call->arg);
-      else
-        LOG_E("callback %x is not a function, sdata %x, edata %x, etext %x",
-              timHw[i].call->callback, (void *)&_sdata, (void *)&_edata, (void *)&_etext);
-      timHw[i].state = TIMER_IDLE;
+      RUN_ARGED_FUNC((*timHw[i].call));
+      timHw[i].status = TIMER_IDLE;
     }
   }
+  return ARES_SUCCESS;
 }
 
-static Nvic_IrqHandler Tim9Handler = {
-    .isr_callback = TimerHw_isr,
-    .param        = &htim9,
-};
+static Nvic_IrqHandler Tim9Handler = {.func = ARGED_FUNC(TimerHw_isr, &htim9)};
 
-static Nvic_IrqHandler Tim12Handler = {
-    .isr_callback = TimerHw_isr,
-    .param        = &htim12,
-};
+static Nvic_IrqHandler Tim12Handler = {.func = ARGED_FUNC(TimerHw_isr, &htim12)};
 
 void TimHw_init() {
   HAL_TIM_Base_Start(&htim9);

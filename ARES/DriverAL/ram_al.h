@@ -4,6 +4,6 @@
 #include "ares_section.h"
 
 #define CCM_DATA AT_SECTION(".ccmram")
-#define RAM_FUCNTION AT_SECTION(".data.ramfun")
-
+// #define RAM_FUCNTION AT_SECTION(".data.ramfun")
+#define RAM_FUCNTION
 #endif

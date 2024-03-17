@@ -10,7 +10,9 @@
  */
 
 #include "nvic_al.h"
+#include "FreeRTOS.h"
 #include "chrono.h"
+#include "cmsis_os2.h"
 #include "initcall.h"
 #include "macro.h"
 #include "slist.h"
@@ -46,19 +48,19 @@
 /* define X-MACROs Table */
 #define ARES_NVIC_XMACROS                                        \
   X_MACRO_Naked(Reset)                                           \
-  X_MACRO_Naked(NMI)                        \
-  X_MACRO_Naked(HardFault)                                  \
-  X_MACRO_Naked(MemManage)                \
-  X_MACRO_Naked(BusFault)                         \
-  X_MACRO_Naked(UsageFault)                     \
+  X_MACRO_Naked(NMI)                                             \
+  X_MACRO_Naked(HardFault)                                       \
+  X_MACRO_Naked(MemManage)                                       \
+  X_MACRO_Naked(BusFault)                                        \
+  X_MACRO_Naked(UsageFault)                                      \
   DUMMY_IRQ                                                      \
   DUMMY_IRQ                                                      \
   DUMMY_IRQ                                                      \
   DUMMY_IRQ                                                      \
-  X_MACRO_Naked(SVC)                                \
-  X_MACRO_Naked(DebugMon)                     \
+  X_MACRO_Naked(SVC)                                             \
+  X_MACRO_Naked(DebugMon)                                        \
   DUMMY_IRQ                                                      \
-  X_MACRO_Naked(PendSV)                             \
+  X_MACRO_Naked(PendSV)                                          \
   X_MACRO_Cortex(SysTick,SysTick_IRQn)                           \
   X_MACRO_IRQ(WWDG)                                              \
   X_MACRO_IRQ(PVD)                                               \
@@ -192,9 +194,9 @@ const char *Nvic_Names[] = {ARES_NVIC_XMACROS};
 #define X_MACRO_IRQ(irq)          [irq##_IRQn + NVIC_IRQN_OFFSET] = ARES_##irq##_IRQe,
 /* create a map from real irq index to our new defined one upper */
 #define NVIC_IRQN_OFFSET 15
-static const uint8_t         IRQn2AresMap[128]               = {ARES_NVIC_XMACROS};
-static SList                *Nvic_SOIHandlers[NUM_NVIC_IRQs] = {NULL};
-static SList                *Nvic_EOIHandlers[NUM_NVIC_IRQs] = {NULL};
+static const uint8_t                  IRQn2AresMap[128]               = {ARES_NVIC_XMACROS};
+static SList                         *Nvic_SOIHandlers[NUM_NVIC_IRQs] = {NULL};
+static SList                         *Nvic_EOIHandlers[NUM_NVIC_IRQs] = {NULL};
 CCM_DATA static volatile ChronoTick32 Nvic_IrqDuration[NUM_NVIC_IRQs] = {0};
 CCM_DATA static volatile uint32_t     Nvic_IrqCount[NUM_NVIC_IRQs]    = {0};
 
@@ -254,7 +256,7 @@ static void Nvic_doSOI(Nvic_IRQe ares_irqn) {
   SList *cur = Nvic_SOIHandlers[ares_irqn];
   while (cur != NULL) {
     Nvic_IrqHandler *handler = container_of(cur, Nvic_IrqHandler, list);
-    handler->isr_callback(handler->param);
+    RUN_ARGED_FUNC(handler->func);
     cur = cur->next;
   }
 }
@@ -262,7 +264,7 @@ static void Nvic_doEOI(Nvic_IRQe ares_irqn) {
   SList *cur = Nvic_EOIHandlers[ares_irqn];
   while (cur != NULL) {
     Nvic_IrqHandler *handler = container_of(cur, Nvic_IrqHandler, list);
-    handler->isr_callback(handler->param);
+    RUN_ARGED_FUNC(handler->func);
     cur = cur->next;
   }
 }
@@ -281,32 +283,35 @@ int Nvic_requestEOI(IRQn_Type irqn, Nvic_IrqHandler *handler) {
   return ARES_SUCCESS;
 }
 
-static void Nvic_Statistics() {
-  static uint32_t last_tick = 0;
-  if (last_tick == 0) {
-    last_tick = HAL_GetTick();
-  }
-  if (HAL_GetTick() - last_tick > 1000) {
-    for (size_t i = 0; i < NUM_NVIC_IRQs; i++) {
-      if (Nvic_IrqCount[i] != 0) {
-        LOG_I_STAMPED("%s: freq = %d, total run time %fs", Nvic_Names[i], Nvic_IrqCount[i],
-              Chrono_diff32(0, Nvic_IrqDuration[i]));
-        Nvic_IrqCount[i]    = 0;
-        Nvic_IrqDuration[i] = 0;
-      }
-    }
-    last_tick = HAL_GetTick();
-  }
-}
-
-Nvic_IrqHandler Nvic_StatisticsHandler = {.isr_callback = Nvic_Statistics};
-
 static int Nvic_init(void) {
   __disable_irq();
   SCB->VTOR = (uint32_t)AresVecTab;
   __DSB();
   __enable_irq();
-  Nvic_requestEOI(SysTick_IRQn, &Nvic_StatisticsHandler);
   return ARES_SUCCESS;
 }
 Initcall_registerPure(Nvic_init);
+
+#include "periodic.h"
+
+static int Nvic_Statistics(void *args) {
+  static uint32_t lastTick = 0;
+  uint32_t        nowTick  = osKernelGetTickCount();
+  if (!lastTick) {
+    lastTick = nowTick;
+    return ARES_SUCCESS;
+  }
+  for (size_t i = 0; i < NUM_NVIC_IRQs; i++) {
+    if (Nvic_IrqCount[i] != 0) {
+      LOG_I_STAMPED("%s: freq = %d, total run time %fs", Nvic_Names[i],
+                    Nvic_IrqCount[i] * (nowTick - lastTick) / configTICK_RATE_HZ,
+                    Chrono_diff32(0, Nvic_IrqDuration[i]));
+      Nvic_IrqCount[i]    = 0;
+      Nvic_IrqDuration[i] = 0;
+    }
+  }
+  lastTick = nowTick;
+  return ARES_SUCCESS;
+}
+
+Periodic_registerStatic(FREQ_1HZ, Nvic_Statistics,NULL);

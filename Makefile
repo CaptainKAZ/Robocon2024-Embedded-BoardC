@@ -181,7 +181,7 @@ CFLAGS += -D__GIT_COMMIT_HASH="\"$(BULID_INFO)\""
 LDSCRIPT = STM32F407IGHx_FLASH.ld
 
 # ARES custom ld flag
-ARES_LD = ares.ld
+ARES_LD = ARES/ares.ld
 
 # libraries
 LIBS = -lc -lm -lnosys

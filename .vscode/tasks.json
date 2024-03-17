@@ -101,6 +101,19 @@
       "type": "process",
       "command": "${command:uspip-connect.Attach}",
       "problemMatcher": []
-    }
+    },
+    {
+      "label": "launch_livegdb",
+      "type": "shell",
+      "command": "./livegdb.sh",
+      "options": {
+        "cwd": "${workspaceRoot}"
+      },
+      "group": "build",
+      "dependsOn":[
+        "build"
+      ],
+      "isBackground": true
+    },
   ]
 }

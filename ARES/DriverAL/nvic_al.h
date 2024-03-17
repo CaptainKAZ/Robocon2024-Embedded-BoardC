@@ -2,10 +2,10 @@
 #define NVIC_AL_H
 #include "main.h"
 #include "slist.h"
+#include "macro.h"
 
 typedef struct Nvic_IrqHandler{
-  void (*isr_callback)(void *);
-  void * param;
+  struct ArgedFunc func;
   SList list;
 }Nvic_IrqHandler;
 

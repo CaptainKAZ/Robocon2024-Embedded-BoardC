@@ -1,6 +1,8 @@
 #ifndef MACRO_H
 #define MACRO_H
 
+#define ARRAY_LEN(x) sizeof((x)) / sizeof((x)[0])
+
 typedef enum {
   ARES_SUCCESS = 0,
   ARES_NO_RESORCE,
@@ -29,5 +31,31 @@ typedef enum {
         ;                                                                                          \
     }                                                                                              \
   }
+#include "ares_section.h"
+struct NamedFunc {
+  int   (*callback)(void);
+  char *name;
+};
+
+struct ArgedFunc {
+  int   (*callback)(void *);
+  void *arg;
+};
+
+#define NAMED_FUNC(function)                                                                       \
+  { .callback = function, .name = #function }
+#define ARGED_FUNC(function, argument)                                                             \
+  { .callback = function, .arg = argument }
+
+#define RUN_ARGED_FUNC(func)                                                                       \
+  ({                                                                                               \
+    ARES_ASSERT(IS_FUNCTION((func).callback), "try to run a wrong function pointer!");             \
+    (func).callback(func.arg);                                                                     \
+  })
+#define RUN_NAMEND_FUNC(func)                                                                      \
+  ({                                                                                               \
+    ARES_ASSERT(IS_FUNCTION((func).callback), "try to run a wrong function pointer!");             \
+    (func).callback();                                                                             \
+  })
 
 #endif
