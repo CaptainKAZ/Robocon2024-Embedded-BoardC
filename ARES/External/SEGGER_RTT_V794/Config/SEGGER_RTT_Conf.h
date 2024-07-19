@@ -128,7 +128,8 @@ Revision: $Rev: 24316 $
 //#if ((defined __SES_ARM) || (defined __CROSSWORKS_ARM) || (defined __GNUC__)) && (defined (__ARM_ARCH_7A__))
 //  #define SEGGER_RTT_MEMCPY(pDest, pSrc, NumBytes)      SEGGER_memcpy((pDest), (pSrc), (NumBytes))
 //#endif
-
+#include "macro.h"
+#define SEGGER_RTT_MEMCPY(pDest, pSrc, NumBytes)      memcpy((pDest), (pSrc), (NumBytes))
 //
 // Target is not allowed to perform other RTT operations while string still has not been stored completely.
 // Otherwise we would probably end up with a mixed string in the buffer.
@@ -143,8 +144,9 @@ Revision: $Rev: 24316 $
 // In case of doubt mask all interrupts: 1 << (8 - BASEPRI_PRIO_BITS) i.e. 1 << 5 when 3 bits are implemented in NVIC
 // or define SEGGER_RTT_LOCK() to completely disable interrupts.
 //
+#include "FreeRTOSConfig.h"
 #ifndef   SEGGER_RTT_MAX_INTERRUPT_PRIORITY
-  #define SEGGER_RTT_MAX_INTERRUPT_PRIORITY         (0x20)   // Interrupt priority to lock on SEGGER_RTT_LOCK on Cortex-M3/4 (Default: 0x20)
+  #define SEGGER_RTT_MAX_INTERRUPT_PRIORITY         (configMAX_SYSCALL_INTERRUPT_PRIORITY)   // Interrupt priority to lock on SEGGER_RTT_LOCK on Cortex-M3/4 (Default: 0x20)
 #endif
 
 /*********************************************************************

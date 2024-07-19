@@ -1,7 +1,6 @@
 #include "ram_al.h"
 #include "stddef.h"
 #include "initcall.h"
-#include "string.h"
 #include "main.h"
 
 int Ram_init(void) {

@@ -89,7 +89,7 @@ void Chrono_usdelayOs(uint32_t us) {
   }
   TimDelayCall call = ARGED_FUNC(Chrono_delayCallback, ((void *)xTaskGetCurrentTaskHandle()));
 
-  int ret = Timer_setupDelay(&call, us);
+  int ret = Tim_setupDelay(&call, us);
   // no available Hw
   if (unlikely(ret != ARES_SUCCESS)) {
     LOG_E("no available delay timesrc, degenerate to osDelay");
@@ -112,8 +112,6 @@ Initcall_registerPostOs(Chrono_test);
 
 int Chrono_init(void) {
   SysClkFreq = HAL_RCC_GetSysClockFreq();
-  Dwt_init();
-  TimHw_init();
   InitalTick64 = Chrono_get64();
   LOG_I("SysClkFreq\t%d", SysClkFreq);
   return 0;

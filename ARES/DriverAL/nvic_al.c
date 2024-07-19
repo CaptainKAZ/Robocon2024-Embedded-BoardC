@@ -195,8 +195,8 @@ const char *Nvic_Names[] = {ARES_NVIC_XMACROS};
 /* create a map from real irq index to our new defined one upper */
 #define NVIC_IRQN_OFFSET 15
 static const uint8_t                  IRQn2AresMap[128]               = {ARES_NVIC_XMACROS};
-static SList                         *Nvic_SOIHandlers[NUM_NVIC_IRQs] = {NULL};
-static SList                         *Nvic_EOIHandlers[NUM_NVIC_IRQs] = {NULL};
+static sList                         *Nvic_SOIHandlers[NUM_NVIC_IRQs] = {NULL};
+static sList                         *Nvic_EOIHandlers[NUM_NVIC_IRQs] = {NULL};
 CCM_DATA static volatile ChronoTick32 Nvic_IrqDuration[NUM_NVIC_IRQs] = {0};
 CCM_DATA static volatile uint32_t     Nvic_IrqCount[NUM_NVIC_IRQs]    = {0};
 
@@ -253,19 +253,15 @@ static const void *AresVecTab[128] __attribute__((aligned(0x200))) = {&_estack, 
 /* end of using x-macro tricks */
 
 static void Nvic_doSOI(Nvic_IRQe ares_irqn) {
-  SList *cur = Nvic_SOIHandlers[ares_irqn];
-  while (cur != NULL) {
+  Slist_foreach(cur, Nvic_SOIHandlers[ares_irqn]) {
     Nvic_IrqHandler *handler = container_of(cur, Nvic_IrqHandler, list);
     RUN_ARGED_FUNC(handler->func);
-    cur = cur->next;
   }
 }
 static void Nvic_doEOI(Nvic_IRQe ares_irqn) {
-  SList *cur = Nvic_EOIHandlers[ares_irqn];
-  while (cur != NULL) {
+  Slist_foreach(cur, Nvic_SOIHandlers[ares_irqn]) {
     Nvic_IrqHandler *handler = container_of(cur, Nvic_IrqHandler, list);
     RUN_ARGED_FUNC(handler->func);
-    cur = cur->next;
   }
 }
 
@@ -297,10 +293,7 @@ Initcall_registerPure(Nvic_init);
 static int Nvic_Statistics(void *args) {
   static uint32_t lastTick = 0;
   uint32_t        nowTick  = osKernelGetTickCount();
-  if (!lastTick) {
-    lastTick = nowTick;
-    return ARES_SUCCESS;
-  }
+
   for (size_t i = 0; i < NUM_NVIC_IRQs; i++) {
     if (Nvic_IrqCount[i] != 0) {
       LOG_I_STAMPED("%s: freq = %d, total run time %fs", Nvic_Names[i],
@@ -314,4 +307,4 @@ static int Nvic_Statistics(void *args) {
   return ARES_SUCCESS;
 }
 
-Periodic_registerStatic(FREQ_1HZ, Nvic_Statistics,NULL);
+Periodic_registerStatic(FREQ_1HZ, Nvic_Statistics, NULL);

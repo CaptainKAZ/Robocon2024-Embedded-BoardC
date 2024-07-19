@@ -13,7 +13,6 @@ typedef DwtTick ChronoTick32;
 
 extern ChronoTick64 InitalTick64;
 
-extern ChronoTick64 Chrono_get64(void);
 extern float        Chrono_diff32(ChronoTick32 start, ChronoTick32 end);
 extern float        Chrono_diff64(ChronoTick64 *start, ChronoTick64 *end);
 

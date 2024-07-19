@@ -2,15 +2,28 @@
 #define SLIST_H
 #include "main.h"
 
-struct SList {
-  struct SList *next;
+struct sList {
+  struct sList *next;
 };
-typedef struct SList SList;
+typedef struct sList sList;
 
-inline void SList_init(SList *item) { item->next = NULL; }
-void        SList_pushBack(SList *head, SList *item);
-SList      *SList_pushFront(SList *head, SList *item);
+inline void SList_init(sList *item) { item->next = NULL; }
 
-#define Slist_foreach(item, slist) for (SList *item = slist; item != NULL; item = item->next)
+inline void SList_pushBack(sList *head, sList *item) {
+  sList *cur = head;
+  while (cur->next != NULL) {
+    cur = cur->next;
+  }
+  item->next = NULL;
+  cur->next  = item;
+}
+
+inline sList *SList_pushFront(sList *head, sList *item) {
+  item->next = head;
+  return item;
+}
+
+#define Slist_foreach(item, slist)                                                                 \
+  for (register sList *item = slist; item != NULL; item = item->next)
 
 #endif

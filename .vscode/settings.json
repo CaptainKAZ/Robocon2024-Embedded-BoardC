@@ -27,4 +27,8 @@
 		"--background-index",
 		"-log=verbose"
     ],
+    "cSpell.words": [
+        "Initcall",
+        "SEGGER"
+    ],
 }

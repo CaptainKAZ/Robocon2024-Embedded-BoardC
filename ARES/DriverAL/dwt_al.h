@@ -21,8 +21,6 @@ typedef uint32_t         DwtTick;
 typedef uint64_t         DwtTick64;
 extern volatile uint32_t Dwt_Period;
 
-extern void Dwt_init();
-
 inline DwtTick Dwt_get() { return DWT->CYCCNT; }
 
 extern int Dwt_updatePeriod();

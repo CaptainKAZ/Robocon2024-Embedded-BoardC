@@ -1,3 +1,4 @@
+/* @todo use cmsis_os2 instead of freertos APIs */
 #include "macro.h"
 #include "main.h"
 #include "work_queue.h"
@@ -13,7 +14,7 @@ static uint8_t       xQueueStorage[WORK_QUEUE_LEN * sizeof(Work)];
 static StaticQueue_t xQueueBuffer;
 static QueueHandle_t workQueue;
 
-DECLEAR_WORK_STATIC(initcall, Initcall_doPostOs, NULL);
+DECLARE_WORK_STATIC(initcall, Initcall_doPostOs, NULL);
 
 int Workqueue_schedule(const Work *work) {
   // LOG_D("Scheduling work: 0x%x, function: 0x%x argument: 0x%x", work, work->function, work->argument);

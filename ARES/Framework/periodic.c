@@ -9,16 +9,16 @@
 
 typedef struct PeriodicHandle {
   uint32_t      divider;
-  SList        *head;
+  sList        *head;
   TimerHandle_t timer;
   const char   *name;
 } PeriodicHandle;
 
-#define PERIODIC_XMACRO(freq)                                                                      \
+#define PERIODIC_FREQ_XMACRO(freq)                                                                 \
   [FREQ_##freq##                                                                                   \
       HZ] = {.divider = configTICK_RATE_HZ / freq, .head = NULL, .name = "timer_" #freq "hz"},
-static PeriodicHandle periodicHandles[] = {ARES_PERIODIC_XMACROS};
-#undef PERIODIC_XMACRO
+static PeriodicHandle periodicHandles[] = {ARES_PERIODIC_FREQ_XMACROS};
+#undef PERIODIC_FREQ_XMACRO
 
 static void Periodic_process(TimerHandle_t xTimer) {
   PeriodicHandle *group = pvTimerGetTimerID(xTimer);
@@ -34,7 +34,7 @@ static int Periodic_init(void) {
                                             pdTRUE, (void *)&periodicHandles[i], Periodic_process);
     if (!periodicHandles[i].timer) {
       LOG_E("not enough heap space for periodic soft timers!");
-      return ARES_NO_RESORCE;
+      return ARES_NO_RESOURCE;
     }
     xTimerStart(periodicHandles[i].timer, 0);
   }

@@ -1,4 +1,5 @@
 #include "tim_al.h"
+#include "initcall.h"
 #include "log.h"
 #include "macro.h"
 #include "ares_section.h"
@@ -38,7 +39,7 @@ static TimHw timHw[] = {
  * @param us the time to delay in us
  * @return int ARES standard errno
  */
-int Timer_setupDelay(TimDelayCall *call, uint16_t us) {
+int Tim_setupDelay(TimDelayCall *call, uint16_t us) {
   // first find a hw
   TimHw *hw = NULL;
   for (uint8_t i = 0; i < NUM_HW; i++) {
@@ -49,7 +50,7 @@ int Timer_setupDelay(TimDelayCall *call, uint16_t us) {
   }
   if (hw == NULL) {
     LOG_E("No available Hw for call");
-    return ARES_NO_RESORCE;
+    return ARES_NO_RESOURCE;
   }
   // if the tim is not enabled, enable it
   if (unlikely(!(hw->tim->Instance->CR1 & TIM_CR1_CEN))) {
@@ -88,9 +89,12 @@ static Nvic_IrqHandler Tim9Handler = {.func = ARGED_FUNC(TimerHw_isr, &htim9)};
 
 static Nvic_IrqHandler Tim12Handler = {.func = ARGED_FUNC(TimerHw_isr, &htim12)};
 
-void TimHw_init() {
+int TimHw_init(void) {
   HAL_TIM_Base_Start(&htim9);
   HAL_TIM_Base_Start(&htim12);
   Nvic_requestSOI(TIM1_BRK_TIM9_IRQn, &Tim9Handler);
   Nvic_requestSOI(TIM8_BRK_TIM12_IRQn, &Tim12Handler);
+  return ARES_SUCCESS;
 }
+
+Initcall_registerDevice(TimHw_init);

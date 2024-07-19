@@ -6,7 +6,7 @@
     "configurations": [
         {
             "name": "ST-Link Debug",
-            "showDevDebugOutput": "none",
+            "showDevDebugOutput": "raw",
             "preLaunchTask": "build",
             "cwd": "${workspaceFolder}",
             "executable": "./build/Robocon2024-Embedded-BoardC.elf",
@@ -18,7 +18,7 @@
             "configFiles": [
                 "openocd.cfg"
             ],
-            "runToEntryPoint": "main",
+            // "runToEntryPoint": "main",
             "rtos": "auto",
             "rttConfig": {
                 "enabled": true,
@@ -34,26 +34,21 @@
                         "type": "console"
                     },
                     {
-                        "type": "binary",
                         "port": 1,
                     },
                 ]
             },
             "overrideLaunchCommands": [
+                "source ares_gdb_plugin.py",
                 "monitor reset halt",
                 "-target-download",
             ],
+            "postLaunchCommands": ["b osKernelStart","r","clear","monitor reset halt"],
+            // "preLaunchCommands": ["set detach-on-fork off"],
             "liveWatch": {
                 "enabled": true,
                 "samplesPerSecond": 4,
             },
         },
-        {
-            "name": "Run Python Script",
-            "type": "shell",
-            "request": "launch",
-            "program": "${file}",
-            "console": "integratedTerminal"
-        }
     ]
 }
